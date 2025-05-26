@@ -4,23 +4,14 @@ Table tickets {
   id integer [primary key]
   text varchar [not null]
   note varchar [note: "Used by admin note field"]
-  state integer [note: "le ampelsystem"]
-  label_id timestamp 
+  state integer [not null, note: "le ampelsystem"] 
   created_at timestamp [not null]
   last_modified timestamp [not null]
 }
 
-Table users {
-  id integer [primary key]
-  mail varchar [not null, unique]
-  username varchar [not null]
-  created_at timestamp [not null]
-  last_modified timestamp [not null]
-}
-
-Table settings {
-  key varchar [primary key]
-  value varchar [not null]
+Table labels_to_ticket {
+  ticket integer [ref: > tickets.id, not null]
+  label varchar [ref: > labels.name, not null]
 }
 
 Table labels {
@@ -28,7 +19,18 @@ Table labels {
   color varchar
 }
 
-Table labels_to_ticket {
-  ticket integer [ref: > tickets.id, not null]
-  label varchar [ref: > labels.name, not null]
+
+Table users {
+  id integer [primary key]
+  mail varchar [not null, unique]
+  firstname varchar [not null]
+  lastname varchar [not null]
+  role varchar [not null]
+  created_at timestamp [not null]
+  last_modified timestamp [not null]
+}
+
+Table settings {
+  key varchar [primary key]
+  value varchar [not null]
 }
