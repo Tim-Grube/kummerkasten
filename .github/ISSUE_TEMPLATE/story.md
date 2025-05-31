@@ -2,7 +2,7 @@
 name: Story
 about: To write stories in a unified way
 title: "[Story]"
-labels: enhancement
+labels: story
 assignees: ''
 
 ---
