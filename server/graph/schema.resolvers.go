@@ -7,6 +7,8 @@ package graph
 import (
 	"context"
 	"fmt"
+	"log"
+	"strconv"
 	"time"
 
 	"github.com/Plebysnacc/kummerkasten/graph/model"
@@ -14,7 +16,22 @@ import (
 
 // AddUser is the resolver for the addUser field.
 func (r *mutationResolver) AddUser(ctx context.Context, user model.NewUser) (*model.User, error) {
-	panic(fmt.Errorf("not implemented: AddUser - addUser"))
+	newUser := &model.User{
+		Mail:         user.Mail,
+		Firstname:    user.Firstname,
+		Lastname:     user.Lastname,
+		Role:         "user",
+		CreatedAt:    time.Now(),
+		LastModified: time.Now(),
+	}
+
+	_, dbErr := r.DB.NewInsert().Model(newUser).Returning("id").Exec(ctx)
+	if dbErr != nil {
+		log.Printf("Failed to add user: %v", dbErr)
+		return nil, dbErr
+	}
+
+	return newUser, nil
 }
 
 // Ticket is the resolver for the ticket field.
@@ -29,21 +46,38 @@ func (r *queryResolver) Label(ctx context.Context, name string) (*model.Label, e
 
 // User is the resolver for the user field.
 func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error) {
-	dummyUser := &model.User{
-		ID:           "1",
-		Mail:         "dummy@kummerkasten.local",
-		Firstname:    "dummy",
-		Lastname:     "local",
-		Role:         "dummy",
-		CreatedAt:    time.Now(),
-		LastModified: time.Now(),
+	var user model.User
+
+	userID, err := strconv.Atoi(id)
+	if err != nil {
+		return nil, fmt.Errorf("invalid user ID format: %v", err)
 	}
-	return dummyUser, nil
+
+	err = r.DB.NewSelect().Model(&user).Where("id = ?", userID).Scan(ctx)
+	if err != nil {
+		log.Printf("failed to fetch user with ID %d: %v", userID, err)
+		return nil, err
+	}
+
+	return &user, nil
 }
 
 // Setting is the resolver for the setting field.
 func (r *queryResolver) Setting(ctx context.Context, key string) (*model.Setting, error) {
 	panic(fmt.Errorf("not implemented: Setting - setting"))
+}
+
+// Users is the resolver for the users field.
+func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
+	var users []*model.User
+
+	err := r.DB.NewSelect().Model(&users).Scan(ctx)
+	if err != nil {
+		log.Printf("failed to fetch Users: %v", err)
+		return nil, err
+	}
+
+	return users, nil
 }
 
 // Mutation returns MutationResolver implementation.

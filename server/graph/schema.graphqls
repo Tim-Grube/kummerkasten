@@ -5,7 +5,7 @@
 scalar Time
 
 type Ticket {
-  id: ID!
+  id: Int!
   text: String!
   note: String
   state: Int!
@@ -21,7 +21,7 @@ type Label {
 }
 
 type User {
-  id: ID!
+  id: Int!
   mail: String!
   firstname: String!
   lastname: String!
@@ -41,6 +41,7 @@ type Query {
   label(name: String!): Label
   user(id: ID!): User
   setting(key: String!): Setting
+  users: [User!]!
 }
 
 
