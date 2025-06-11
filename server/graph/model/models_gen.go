@@ -31,7 +31,7 @@ type Setting struct {
 }
 
 type Ticket struct {
-	ID           string    `json:"id"`
+	ID           int32     `json:"id"`
 	Text         string    `json:"text"`
 	Note         *string   `json:"note,omitempty"`
 	State        int32     `json:"state"`
@@ -41,7 +41,7 @@ type Ticket struct {
 }
 
 type User struct {
-	ID           string    `json:"id"`
+	ID           int32     `json:"id"`
 	Mail         string    `json:"mail"`
 	Firstname    string    `json:"firstname"`
 	Lastname     string    `json:"lastname"`

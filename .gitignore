@@ -33,5 +33,5 @@ next-env.d.ts
 
 .vscode/
 
-/server/graph/generated.go
-/server/graph/model/models_gen.go
+server/graph/generated.go
+server/graph/model/models_gen.go
