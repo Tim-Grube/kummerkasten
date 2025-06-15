@@ -1,0 +1,57 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+scalar Time
+
+type Ticket {
+  id: Int!
+  text: String!
+  note: String
+  state: Int!
+  createdAt: Time!
+  lastModified: Time!
+  labels: [Label!]
+}
+
+type Label {
+  name: String!
+  color: String
+  tickets: [Ticket!]
+}
+
+type User {
+  id: Int!
+  mail: String!
+  firstname: String!
+  lastname: String!
+  role: String!
+  createdAt: Time!
+  lastModified: Time!
+}
+
+type Setting{
+  key: String!
+  value: String!
+}
+
+
+type Query {
+  ticket(id: ID!): Ticket
+  label(name: String!): Label
+  user(id: ID!): User
+  setting(key: String!): Setting
+  users: [User!]!
+}
+
+
+input NewUser {
+  mail: String!
+  firstname: String!
+  lastname: String!
+  role: String!
+}
+
+type Mutation {
+  addUser(user: NewUser!): User!
+}
