@@ -4,9 +4,9 @@
 ### Create Database
 In postgres:
 ```
-CREATE DATABASE <db_name>
-CREATE USER <username> WITH ENCRYPTED PASSWORD '<password>'
-GRANT ALL PRIVILEGES ON DATABASE <db_name> TO <username>
+CREATE DATABASE <db_name>;
+CREATE USER <username> WITH ENCRYPTED PASSWORD '<password>';
+GRANT ALL PRIVILEGES ON DATABASE <db_name> TO <username>;
 ```
 Afterwards copy the .env and fill in the flags
 `cp .env .env.local`
