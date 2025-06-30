@@ -24,14 +24,14 @@ jobs:
         with:
           go-version: "1.24.3"
 
+      - name: Generate GraphQL code
+        run: go run github.com/99designs/gqlgen generate
+
       - name: Lint
         uses: golangci/golangci-lint-action@v8
         with:
           install-mode: "goinstall"
           working-directory: ./server
-
-      - name: Generate GraphQL code
-        run: go generate ./...
 
       - name: Build
         run: go build -v ./...
