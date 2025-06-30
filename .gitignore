@@ -33,7 +33,7 @@ next-env.d.ts
 
 # IDE Stuff
 .vscode/
-*.idea/
+.idea/
 
 # Generated Server Files
 server/graph/generated.go
