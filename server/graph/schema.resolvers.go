@@ -35,61 +35,81 @@ func (r *mutationResolver) CreateTicket(ctx context.Context, ticket model.NewTic
 }
 
 // DeleteTicket is the resolver for the deleteTicket field.
-func (r *mutationResolver) DeleteTicket(ctx context.Context, id []string) (string, error) {
-	result, err := r.DB.NewDelete().Model((*model.Ticket)(nil)).Where("id IN (?)", bun.In(id)).Exec(ctx)
+func (r *mutationResolver) DeleteTicket(ctx context.Context, ids []string) (int32, error) {
+	result, err := r.DB.NewDelete().Model((*model.Ticket)(nil)).Where("id IN (?)", bun.In(ids)).Exec(ctx)
 	if err != nil {
 		log.Printf("Failed to delete tickets : %v", err)
-		return "", err
+		return 0, err
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
 		log.Printf("Failed to read affected rows: %v", err)
-		return "", err
+		return 0, err
 	}
 
-	return fmt.Sprintf("Deleted %d Ticket(s)", rowsAffected), nil
+	return int32(rowsAffected), nil
 }
 
 // UpdateTicket is the resolver for the updateTicket field.
-func (r *mutationResolver) UpdateTicket(ctx context.Context, id string, ticket model.NewTicket) (*model.Ticket, error) {
-	updateTicket := &model.Ticket{
-		ID:           id,
-		Text:         ticket.Text,
-		Title:        ticket.Title,
-		State:        model.TicketState(ticket.State),
-		LastModified: time.Now(),
+func (r *mutationResolver) UpdateTicket(ctx context.Context, id string, ticket model.UpdateTicket) (string, error) {
+	tickets, err := r.Query().Tickets(ctx, []string{id}, nil)
+
+	if err != nil || len(tickets) == 0 {
+		return "", fmt.Errorf("ticket with id %v not found", id)
 	}
 
-	if _, err := r.DB.NewUpdate().Model(updateTicket).Where("id = ?", id).Exec(ctx); err != nil {
+	updatedTicket := tickets[0]
+
+	if ticket.Note != nil {
+		updatedTicket.Note = ticket.Note
+	}
+	if ticket.Text != nil {
+		updatedTicket.Text = *ticket.Note
+	}
+	if ticket.Note != nil {
+		updatedTicket.Note = ticket.Note
+	}
+	if ticket.State != nil {
+		updatedTicket.State = *ticket.State
+	}
+
+	updatedTicket.LastModified = time.Now()
+
+	if _, err := r.DB.NewUpdate().Model(updatedTicket).Where("id = ?", id).Exec(ctx); err != nil {
 		log.Printf("Failed to update setting %s: %v", id, err)
-		return nil, err
+		return "", err
 	}
 
-	return updateTicket, nil
+	if _, err := r.DB.NewUpdate().Model(updatedTicket).Where("id = ?", id).Exec(ctx); err != nil {
+		log.Printf("Failed to update ticket %s: %v", id, err)
+		return "", err
+	}
+
+	return updatedTicket.ID, nil
 }
 
 // UpdateTicketState is the resolver for the updateTicketState field.
-func (r *mutationResolver) UpdateTicketState(ctx context.Context, id []string, state model.TicketState) (string, error) {
+func (r *mutationResolver) UpdateTicketState(ctx context.Context, ids []string, state model.TicketState) (int32, error) {
 	result, err := r.DB.NewUpdate().
 		Model((*model.Ticket)(nil)).
-		Where("id IN (?)", bun.In(id)).
+		Where("id IN (?)", bun.In(ids)).
 		Set("state = ?", state).
 		Set("last_modified = ?", time.Now()).
 		Exec(ctx)
 
 	if err != nil {
 		log.Printf("Failed to update setting state: %v", err)
-		return "", err
+		return 0, err
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
 		log.Printf("Failed to read affected rows: %v", err)
-		return "", err
+		return 0, err
 	}
 
-	return fmt.Sprintf("Updated %d Ticket(s)", rowsAffected), nil
+	return int32(rowsAffected), nil
 }
 
 // CreateLabel is the resolver for the createLabel field.
