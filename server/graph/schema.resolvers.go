@@ -36,17 +36,60 @@ func (r *mutationResolver) CreateTicket(ctx context.Context, ticket model.NewTic
 
 // DeleteTicket is the resolver for the deleteTicket field.
 func (r *mutationResolver) DeleteTicket(ctx context.Context, id []string) (string, error) {
-	panic(fmt.Errorf("not implemented: DeleteTicket - deleteTicket"))
+	result, err := r.DB.NewDelete().Model((*model.Ticket)(nil)).Where("id IN (?)", bun.In(id)).Exec(ctx)
+	if err != nil {
+		log.Printf("Failed to delete tickets : %v", err)
+		return "", err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		log.Printf("Failed to read affected rows: %v", err)
+		return "", err
+	}
+
+	return fmt.Sprintf("Deleted %d Ticket(s)", rowsAffected), nil
 }
 
 // UpdateTicket is the resolver for the updateTicket field.
 func (r *mutationResolver) UpdateTicket(ctx context.Context, id string, ticket model.NewTicket) (*model.Ticket, error) {
-	panic(fmt.Errorf("not implemented: UpdateTicket - updateTicket"))
+	updateTicket := &model.Ticket{
+		ID:           id,
+		Text:         ticket.Text,
+		Title:        ticket.Title,
+		State:        model.TicketState(ticket.State),
+		LastModified: time.Now(),
+	}
+
+	if _, err := r.DB.NewUpdate().Model(updateTicket).Where("id = ?", id).Exec(ctx); err != nil {
+		log.Printf("Failed to update setting %s: %v", id, err)
+		return nil, err
+	}
+
+	return updateTicket, nil
 }
 
 // UpdateTicketState is the resolver for the updateTicketState field.
 func (r *mutationResolver) UpdateTicketState(ctx context.Context, id []string, state model.TicketState) (string, error) {
-	panic(fmt.Errorf("not implemented: UpdateTicketState - updateTicketState"))
+	result, err := r.DB.NewUpdate().
+		Model((*model.Ticket)(nil)).
+		Where("id IN (?)", bun.In(id)).
+		Set("state = ?", state).
+		Set("last_modified = ?", time.Now()).
+		Exec(ctx)
+
+	if err != nil {
+		log.Printf("Failed to update setting state: %v", err)
+		return "", err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		log.Printf("Failed to read affected rows: %v", err)
+		return "", err
+	}
+
+	return fmt.Sprintf("Updated %d Ticket(s)", rowsAffected), nil
 }
 
 // CreateLabel is the resolver for the createLabel field.
@@ -149,7 +192,24 @@ func (r *mutationResolver) RemoveLabelFromTicket(ctx context.Context, labelName 
 
 // Tickets is the resolver for the tickets field.
 func (r *queryResolver) Tickets(ctx context.Context, id []string, state []model.TicketState) ([]*model.Ticket, error) {
-	panic(fmt.Errorf("not implemented: Tickets - tickets"))
+	var tickets []*model.Ticket
+
+	query := r.DB.NewSelect().Model(&tickets)
+
+	if len(id) > 0 {
+		query = query.Where("id IN (?)", bun.In(id))
+	}
+
+	if len(state) > 0 {
+		query = query.Where("state IN (?)", bun.In(state))
+	}
+
+	if err := query.Scan(ctx); err != nil {
+		log.Printf("Failed to get tickets: %v", err)
+		return nil, err
+	}
+
+	return tickets, nil
 }
 
 // Labels is the resolver for the labels field.
