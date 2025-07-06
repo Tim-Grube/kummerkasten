@@ -13,7 +13,7 @@ Set `DEBUG=true` for development
 Now go into the server folder
 
 ```
-go get github.com/99designs/gqlgen@v0.17.24
+go get github.com/99designs/gqlgen
 go mod tidy
 go generate ./...
 go run ./server.go
