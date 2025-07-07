@@ -21,6 +21,7 @@ func (r *mutationResolver) CreateTicket(ctx context.Context, ticket model.NewTic
 		ID:           uuid.New().String(),
 		Text:         ticket.Text,
 		Title:        ticket.Title,
+		Note:         ticket.Note,
 		State:        model.TicketState(ticket.State),
 		CreatedAt:    time.Now(),
 		LastModified: time.Now(),
@@ -61,11 +62,11 @@ func (r *mutationResolver) UpdateTicket(ctx context.Context, id string, ticket m
 
 	updatedTicket := tickets[0]
 
-	if ticket.Note != nil {
-		updatedTicket.Note = ticket.Note
+	if ticket.Title != nil {
+		updatedTicket.Title = *ticket.Title
 	}
 	if ticket.Text != nil {
-		updatedTicket.Text = *ticket.Note
+		updatedTicket.Text = *ticket.Text
 	}
 	if ticket.Note != nil {
 		updatedTicket.Note = ticket.Note
@@ -75,11 +76,6 @@ func (r *mutationResolver) UpdateTicket(ctx context.Context, id string, ticket m
 	}
 
 	updatedTicket.LastModified = time.Now()
-
-	if _, err := r.DB.NewUpdate().Model(updatedTicket).Where("id = ?", id).Exec(ctx); err != nil {
-		log.Printf("Failed to update setting %s: %v", id, err)
-		return "", err
-	}
 
 	if _, err := r.DB.NewUpdate().Model(updatedTicket).Where("id = ?", id).Exec(ctx); err != nil {
 		log.Printf("Failed to update ticket %s: %v", id, err)
