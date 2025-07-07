@@ -15,6 +15,13 @@ enum UserRole {
   user
 }
 
+enum FormLabels {
+   DOZENTIN,
+   VERANSTALTUNG,
+   FACHSCHAFT,
+   SONSTIGES
+}
+
 type Ticket {
   id: String!
   title: String!
@@ -58,8 +65,7 @@ type Query {
 input NewTicket {
   title: String!
   text: String!
-  note: String
-  state: TicketState!
+  labels: [FormLabels!]
 }
 
 input NewLabel {

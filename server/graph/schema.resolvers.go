@@ -17,12 +17,28 @@ import (
 
 // CreateTicket is the resolver for the createTicket field.
 func (r *mutationResolver) CreateTicket(ctx context.Context, ticket model.NewTicket) (*model.Ticket, error) {
+	var labels []*model.Label
+
+	for _, formLabel := range ticket.Labels {
+		label := &model.Label{}
+		err := r.DB.NewSelect().
+			Model(label).
+			Where("name = ?", formLabel.String()).
+			Limit(1).
+			Scan(ctx)
+		if err != nil {
+			log.Printf("Label not found: %s", formLabel.String())
+			return nil, fmt.Errorf("label not found: %s", formLabel.String())
+		}
+		labels = append(labels, label)
+	}
+
 	insertedTicket := &model.Ticket{
 		ID:           uuid.New().String(),
 		Text:         ticket.Text,
 		Title:        ticket.Title,
-		Note:         ticket.Note,
-		State:        model.TicketState(ticket.State),
+		State:        model.TicketStateNew,
+		Labels:       labels,
 		CreatedAt:    time.Now(),
 		LastModified: time.Now(),
 	}
