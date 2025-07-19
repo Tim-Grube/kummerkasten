@@ -67,6 +67,7 @@ type Query {
   users(id: [ID!], mail: [String!], role: UserRole): [User] @hasRole(role: ADMIN)
   settings(keys: [String!]): [Setting] @hasRole(role: ADMIN)
   login(mail: String!, password: String!): Boolean!
+  loginCheck(sid: String): User
 }
 
 input NewTicket {
