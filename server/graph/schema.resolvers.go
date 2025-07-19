@@ -484,6 +484,7 @@ func (r *queryResolver) Login(ctx context.Context, mail string, password string)
 	users, err := r.Users(ctx, make([]string, 0), []string{mail}, nil)
 	if err != nil || len(users) == 0 {
 		log.Printf("Failed to fetch user for login: %v", err)
+		return false, err
 	}
 
 	user := users[0]
