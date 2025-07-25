@@ -25,5 +25,12 @@ go run server.go
 ```
 now the frontend and api are available at port `8080`
 
+### Testing
+We currently provide a baseline of e2e tests with cypress. To use them, start the application and run 
+```
+cd frontend
+npm run test
+```
+
 ## Deployment
 To be added
