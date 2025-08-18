@@ -60,7 +60,7 @@ func (r *mutationResolver) CreateTicket(ctx context.Context, ticket model.NewTic
 		gqlLabels = append(gqlLabels, &model.Label{
 			ID:    l.ID,
 			Name:  l.Name,
-			Color: &l.Color,
+			Color: l.Color,
 		})
 	}
 
@@ -155,6 +155,12 @@ func (r *mutationResolver) UpdateTicketState(ctx context.Context, ids []string, 
 
 // CreateLabel is the resolver for the createLabel field.
 func (r *mutationResolver) CreateLabel(ctx context.Context, label model.NewLabel) (*model.Label, error) {
+	const MAXLABELLENGTH = 50
+
+	if len(label.Name) > MAXLABELLENGTH {
+		return nil, fmt.Errorf("label name exceeds max length of %v", MAXLABELLENGTH)
+	}
+
 	newLabel := &models.Label{
 		ID:   uuid.New().String(),
 		Name: strings.ToLower(label.Name),
@@ -177,7 +183,7 @@ func (r *mutationResolver) CreateLabel(ctx context.Context, label model.NewLabel
 	return &model.Label{
 		ID:      newLabel.ID,
 		Name:    newLabel.Name,
-		Color:   &newLabel.Color,
+		Color:   newLabel.Color,
 		Tickets: []*model.Ticket{},
 	}, nil
 }
@@ -210,6 +216,11 @@ func (r *mutationResolver) UpdateLabel(ctx context.Context, id string, label mod
 	}
 
 	if label.Name != nil {
+		const MAXLABELLENGTH = 50
+		if len(*label.Name) > MAXLABELLENGTH {
+			return "", fmt.Errorf("label name exceeds max length of %v", MAXLABELLENGTH)
+		}
+
 		dbLabel.Name = strings.ToLower(*label.Name)
 	}
 
@@ -580,7 +591,7 @@ func (r *queryResolver) Tickets(ctx context.Context, id []string, state []model.
 			gqlLabels = append(gqlLabels, &model.Label{
 				ID:    l.ID,
 				Name:  l.Name,
-				Color: &l.Color,
+				Color: l.Color,
 			})
 		}
 
@@ -632,7 +643,7 @@ func (r *queryResolver) Labels(ctx context.Context, ids []string) ([]*model.Labe
 		gqlLabels = append(gqlLabels, &model.Label{
 			ID:      l.ID,
 			Name:    l.Name,
-			Color:   &l.Color,
+			Color:   l.Color,
 			Tickets: gqlTickets,
 		})
 	}

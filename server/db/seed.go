@@ -29,35 +29,35 @@ func SeedData(ctx context.Context, db *bun.DB) error {
 
 	labels := []*models.Label{
 		{
-			Name:  "Dozent*in",
+			Name:  "dozent*in",
 			Color: "#474770",
 		},
 		{
-			Name:  "Prof. Mathe",
+			Name:  "prof. mathe",
 			Color: "#476870",
 		},
 		{
-			Name:  "Veranstaltung",
+			Name:  "veranstaltung",
 			Color: "#47704e",
 		},
 		{
-			Name:  "Lineare Algebra",
+			Name:  "lineare algebra",
 			Color: "#487047",
 		},
 		{
-			Name:  "Fachschaft",
+			Name:  "fachschaft",
 			Color: "#477068",
 		},
 		{
-			Name:  "Gremienwahlen",
+			Name:  "gremienwahlen",
 			Color: "#706047",
 		},
 		{
-			Name:  "Sonstiges",
+			Name:  "sonstiges",
 			Color: "#70476f",
 		},
 		{
-			Name:  "Soziales",
+			Name:  "soziales",
 			Color: "#6a4770",
 		},
 	}
@@ -77,7 +77,7 @@ func SeedData(ctx context.Context, db *bun.DB) error {
 			Text:         "Ich komme mit der Mathe nicht klar :(",
 			Note:         "",
 			State:        model.TicketStateNew,
-			Labels:       []*models.Label{labelMap["Lineare Algebra"], labelMap["Prof. Mathe"]},
+			Labels:       []*models.Label{labelMap["lineare algebra"], labelMap["prof. mathe"]},
 			CreatedAt:    time.Now(),
 			LastModified: time.Now(),
 		},
@@ -86,7 +86,7 @@ func SeedData(ctx context.Context, db *bun.DB) error {
 			Text:         "Hilfe! Ich finde keine Dozent*innen die mir einen Pratkikumsplatz anbieten.",
 			Note:         "Vorschlag: Weiterführende Vorlesungen hören, beim DKFZ und ZITI nachfragen.",
 			State:        model.TicketStateOpen,
-			Labels:       []*models.Label{labelMap["Sonstiges"], labelMap["Veranstaltung"]},
+			Labels:       []*models.Label{labelMap["sonstiges"], labelMap["veranstaltung"]},
 			CreatedAt:    time.Now(),
 			LastModified: time.Now(),
 		},
@@ -95,7 +95,7 @@ func SeedData(ctx context.Context, db *bun.DB) error {
 			Text:         "ich will nicht mehr studieren wo exmatrikulationsantrag",
 			Note:         "Kann geschlossen werden.",
 			State:        model.TicketStateOpen,
-			Labels:       []*models.Label{labelMap["Sonstiges"], labelMap["Soziales"]},
+			Labels:       []*models.Label{labelMap["sonstiges"], labelMap["soziales"]},
 			CreatedAt:    time.Now(),
 			LastModified: time.Now(),
 		},
@@ -104,7 +104,7 @@ func SeedData(ctx context.Context, db *bun.DB) error {
 			Text:         "woof",
 			Note:         "Spam",
 			State:        model.TicketStateClosed,
-			Labels:       []*models.Label{labelMap["Soziales"], labelMap["Fachschaft"]},
+			Labels:       []*models.Label{labelMap["soziales"], labelMap["fachschaft"]},
 			CreatedAt:    time.Now(),
 			LastModified: time.Now(),
 		}}
