@@ -21,7 +21,7 @@ import Link from "next/link";
 import {toast} from "sonner";
 import ConfirmationDialog from "@/components/dialogs/confirmation-dialog";
 import {Command, CommandGroup, CommandInput, CommandItem} from "@/components/ui/command";
-import {cn} from "@/lib/utils";
+import {cn, compareStringSets} from "@/lib/utils";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Button} from "@/components/ui/button";
 import {DateRangeFilter} from "@/components/date-range-filter";
@@ -47,7 +47,7 @@ export default function TicketPage() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [labels, setLabels] = useState<Label[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [stateFilter, setStateFilter] = useState<string[]>([]);
+  const [stateFilter, setStateFilter] = useState<TicketState[]>([]);
   const [labelFilter, setLabelFilter] = useState<Label[]>([]);
   const [startDate, setStartDate] = useState<Date | null>(null)
   const [endDate, setEndDate] = useState<Date | null>(null)
@@ -59,6 +59,16 @@ export default function TicketPage() {
   const [labelSearchTerm, setLabelSearchTerm] = useState("");
   const [showMobileSort, setShowMobileSort] = useState(false);
   const [areFiltersSet, setAreFiltersSet] = useState(false);
+  const [stateFilterSet, setStateFilterSet] = useState(false);
+
+  useEffect(() => {
+    const originalState = new Set([TicketState.New, TicketState.Open])
+    const currentState = new Set(stateFilter)
+    setStateFilterSet(!compareStringSets(originalState, currentState))
+  // We can't add the expected stateFilter as array dependency, as it will change size
+  // and thus throw an error
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stateFilter.length]);
 
   const [filteredTickets, setFilteredTickets] = useState<(Ticket[])>([]);
   const [sortedTickets, setSortedTickets] = useState<(Ticket[])>([]);
@@ -95,12 +105,12 @@ export default function TicketPage() {
 
   useEffect(() => {
     setAreFiltersSet(
-      stateFilter.length > 0 ||
+      stateFilterSet ||
       labelFilter.length > 0 ||
       !!startDate ||
       !!endDate
     )
-  }, [stateFilter.length, labelFilter.length, startDate, endDate]);
+  }, [stateFilterSet, labelFilter.length, startDate, endDate]);
 
   const resetDialogState = () => {
     setDialogState({mode: null, currentTicket: null})
@@ -164,7 +174,7 @@ export default function TicketPage() {
 
   const resetAllFilters = () => {
     setSearchTerm("");
-    setStateFilter([]);
+    setStateFilter([TicketState.New, TicketState.Open]);
     setLabelFilter([]);
     setStartDate(null);
     setEndDate(null);
@@ -209,7 +219,10 @@ export default function TicketPage() {
             {isMobile ? (
               <Sheet>
                 <SheetTrigger asChild>
-                  <Button variant="outline" data-cy="mobile-filter-button">
+                  <Button
+                    variant="outline"
+                    className={cn(areFiltersSet && 'border !border-accent')}
+                    data-cy="mobile-filter-button">
                     Filter
                   </Button>
                 </SheetTrigger>
@@ -402,8 +415,14 @@ export default function TicketPage() {
               <div className="flex gap-2">
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className="max-w-[200px] justify-between"
-                            data-cy="button-status">
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        'max-w-[200px] justify-between',
+                         stateFilterSet && 'border !border-accent'
+                      )}
+                      data-cy="button-status"
+                    >
                       {stateFilter && stateFilter.length > 0
                         ? `${stateFilter.length} Status`
                         : "Status"}
@@ -446,8 +465,13 @@ export default function TicketPage() {
                 </Popover>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className="max-w-[200px] justify-between"
-                            data-cy="button-label">
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "max-w-[200px] justify-between",
+                        labelFilter.length > 0 && 'border !border-accent'
+                      )}
+                      data-cy="button-label">
                       {labelFilter && labelFilter.length > 0
                         ? `${labelFilter.length} Labels`
                         : "Labels"}

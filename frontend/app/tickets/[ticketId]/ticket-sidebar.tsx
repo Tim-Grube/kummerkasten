@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/sheet";
 import {Button} from "@/components/ui/button";
 import {Check, Trash2} from "lucide-react";
-import {cn} from "@/lib/utils";
+import {cn, compareStringSets} from "@/lib/utils";
 import {DateRangeFilter} from "@/components/date-range-filter";
 import React, {useCallback, useEffect, useState} from "react";
 import {getClient} from "@/lib/graph/client";
@@ -46,7 +46,7 @@ export default function TicketSidebar({
                                       }: TicketSidebarProps) {
   const router = useRouter();
   const [labels, setLabels] = useState<(Label[])>([]);
-  const [stateFilter, setStateFilter] = useState<string[]>([]);
+  const [stateFilter, setStateFilter] = useState<TicketState[]>([]);
   const [labelFilter, setLabelFilter] = useState<Label[]>([]);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
@@ -54,6 +54,25 @@ export default function TicketSidebar({
     "Erstellt" | "Geändert" | "Titel"
   >("Erstellt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [areFiltersSet, setAreFiltersSet] = useState(false)
+  const [isStateFilterSet, setIsStateFilterSet] = useState(false)
+
+  useEffect(() => {
+    const originalState = new Set([TicketState.Open, TicketState.New])
+    const currentState = new Set(stateFilter)
+    setIsStateFilterSet(!compareStringSets(originalState, currentState))
+    // This will always change by one, thus .length is sufficient here
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stateFilter.length]);
+
+  useEffect(() =>
+      setAreFiltersSet(
+        isStateFilterSet ||
+        labelFilter.length > 0 ||
+        !!startDate ||
+        !!endDate
+      )
+    , [isStateFilterSet, labelFilter.length, startDate, endDate])
 
   const filteredTickets = tickets.filter((ticket) => {
     if (!ticket) return false;
@@ -104,7 +123,7 @@ export default function TicketSidebar({
 
   const resetAllFilters = () => {
     setSearchTermAction("");
-    setStateFilter([]);
+    setStateFilter([TicketState.New, TicketState.Open]);
     setLabelFilter([]);
     setStartDate(null);
     setEndDate(null);
@@ -162,7 +181,11 @@ export default function TicketSidebar({
         />
         <Sheet>
           <SheetTrigger asChild>
-            <Button variant="outline" data-cy="filter-button">
+            <Button
+              variant="outline"
+              className={cn(areFiltersSet && '!border-accent')}
+              data-cy="filter-button"
+            >
               Filter
             </Button>
           </SheetTrigger>
