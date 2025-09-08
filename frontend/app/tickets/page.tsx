@@ -65,9 +65,9 @@ export default function TicketPage() {
     const originalState = new Set([TicketState.New, TicketState.Open])
     const currentState = new Set(stateFilter)
     setStateFilterSet(!compareStringSets(originalState, currentState))
-  // We can't add the expected stateFilter as array dependency, as it will change size
-  // and thus throw an error
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // We can't add the expected stateFilter as array dependency, as it will change size
+    // and thus throw an error
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateFilter.length]);
 
   const [filteredTickets, setFilteredTickets] = useState<(Ticket[])>([]);
@@ -419,7 +419,7 @@ export default function TicketPage() {
                       variant="outline"
                       className={cn(
                         'max-w-[200px] justify-between',
-                         stateFilterSet && 'border !border-accent'
+                        stateFilterSet && 'border !border-accent'
                       )}
                       data-cy="button-status"
                     >
@@ -428,7 +428,7 @@ export default function TicketPage() {
                         : "Status"}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="p-0 w-[250px]">
+                  <PopoverContent className="p-0 w-[170px]">
                     <Command>
                       <CommandInput placeholder="Status suchen..."/>
                       <CommandGroup>
@@ -477,7 +477,7 @@ export default function TicketPage() {
                         : "Labels"}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="p-0 w-[250px]">
+                  <PopoverContent className="p-0 max-w-[200px]">
                     <LabelSelection
                       labels={labels}
                       selectedLabels={labelFilter}
@@ -485,16 +485,13 @@ export default function TicketPage() {
                     />
                   </PopoverContent>
                 </Popover>
-
                 <DateRangeFilter
                   startDate={startDate}
                   setStartDate={setStartDate}
                   endDate={endDate}
                   setEndDate={setEndDate}
                 />
-
                 <SortingSelection setSorting={setSorting} sorting={sorting}/>
-
               </div>
             )}
           </div>
