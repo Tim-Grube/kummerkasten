@@ -94,7 +94,7 @@ export function ClientSidebar() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <ThemeSwitch/>
+            <SidebarThemeSwitch/>
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton
@@ -128,7 +128,7 @@ export function ClientSidebarTrigger() {
   return <SidebarTrigger data-cy={'sidebar-trigger'}/>
 }
 
-function ThemeSwitch() {
+function SidebarThemeSwitch() {
   const [mounted, setMounted] = useState(false)
   const {resolvedTheme, theme, setTheme} = useTheme()
   useEffect(() => {
