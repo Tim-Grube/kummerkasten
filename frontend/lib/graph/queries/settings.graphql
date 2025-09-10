@@ -1,0 +1,13 @@
+query allSettings {
+    settings {
+        key
+        value
+    }
+}
+
+query footerSettings {
+    footerSettings {
+        key
+        value
+    }
+}
