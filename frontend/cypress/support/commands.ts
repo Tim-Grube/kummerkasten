@@ -39,6 +39,12 @@ Cypress.Commands.add('logout', () => {
   cy.visit('/login');
 });
 
+Cypress.Commands.add('logout', () => {
+  sidebar.getLogout().click();
+  cy.clearAllCookies();
+  cy.visit('/login');
+});
+
 // cypress/support/commands.js
 Cypress.Commands.add("getUserIdByMail", (mail: string) => {
   const query = `
@@ -115,6 +121,33 @@ Cypress.Commands.add(
     });
   }
 );
+
+Cypress.Commands.add('deleteUser', (mail: string) => {
+  cy.getUserIdByMail(mail).then((id) => {
+    cy.loginAsRole(UserRole.Admin)
+
+    const mutation = `
+      mutation deleteUser($id: String!) {
+        deleteUser(ids: [$id])
+      }
+    `;
+
+    cy.request({
+      method: "POST",
+      url: "http://localhost:8080/api",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: {
+        query: mutation,
+        variables: {
+          id: id,
+        },
+        operationName: "deleteUser",
+      },
+    });
+  })
+})
 
 Cypress.Commands.add("getAllTickets", (): Cypress.Chainable<any> => {
   const query = `
@@ -251,7 +284,7 @@ declare global {
     interface Chainable {
       login(mail: string, password: string): Chainable<Response<any>>;
 
-      loginAsRole(role: UserRole): Chainable<Response<any>>
+      loginAsRole(role: UserRole): Chainable<any>
 
       logout(): Chainable<Response<any>>
 
@@ -260,6 +293,8 @@ declare global {
       updateUserProfile(id: string, user: UpdateUser): Chainable<Response<any>>;
 
       updateUserPassword(currentPassword: string, newPassword: string): Chainable<Response<any>>;
+
+      deleteUser(mail: string): Chainable<any>
 
       getAllTickets(): Chainable<any>;
 
