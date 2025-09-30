@@ -1,5 +1,5 @@
 import {TicketFiltering, TicketSorting} from "@/app/tickets/page";
-import React from "react";
+import React, {useEffect} from "react";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
@@ -10,6 +10,8 @@ import LabelSelection from "@/components/label-selection";
 import {DateRangeFilter} from "@/components/date-range-filter";
 import SortingSelection from "@/app/tickets/sorting-selection";
 import {useLabels} from "@/components/providers/label-provider";
+import {createTicketQueryString} from "@/lib/url-queries";
+import {usePathname, useRouter} from "next/navigation";
 
 interface FilterBarProps {
   filtering: TicketFiltering;
@@ -23,6 +25,13 @@ interface FilterBarProps {
 export default function FilterBar(
   {filtering, setFiltering, sorting, setSorting, stateFilterSet, scrollable = false}: FilterBarProps) {
   const {labels} = useLabels()
+  const pathname = usePathname()
+  const router = useRouter()
+
+  useEffect(() => {
+    const searchParams = createTicketQueryString(sorting, filtering)
+    router.push(pathname + '?' + searchParams)
+  }, []);
 
   return (
     <div className={cn("flex gap-2", scrollable && "overflow-x-auto max-w-full h-13")}
