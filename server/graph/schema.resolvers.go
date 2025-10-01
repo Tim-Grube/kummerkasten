@@ -150,16 +150,7 @@ func (r *mutationResolver) UpdateTicket(ctx context.Context, id string, ticket m
 		}
 		dbTicket.Title = strings.TrimSpace(*ticket.Title)
 	}
-	if ticket.Text != nil {
-		const MaxTextLength = 3000
-		if len(*ticket.Text) > MaxTextLength {
-			return "", fmt.Errorf("ticket text exceeds max length of %v", MaxTextLength)
-		}
-		dbTicket.Text = *ticket.Text
-	}
-	if ticket.Note != nil {
-		dbTicket.Note = *ticket.Note
-	}
+
 	if ticket.State != nil {
 		dbTicket.State = *ticket.State
 	}
