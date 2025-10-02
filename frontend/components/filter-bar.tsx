@@ -31,7 +31,7 @@ export default function FilterBar(
   useEffect(() => {
     const searchParams = createTicketQueryString(sorting, filtering)
     router.push(pathname + '?' + searchParams)
-  }, []);
+  }, [filtering.state.length, filtering.labels.length, filtering.startDate, filtering.endDate, sorting.field, sorting.orderAscending]);
 
   return (
     <div className={cn("flex gap-2", scrollable && "overflow-x-auto max-w-full h-13")}

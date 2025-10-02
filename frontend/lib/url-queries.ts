@@ -1,4 +1,6 @@
-import {TicketFiltering, TicketSorting} from "@/app/tickets/page";
+import {TicketFiltering, TicketSorting, TicketSortingField} from "@/app/tickets/page";
+import {ReadonlyURLSearchParams} from "next/navigation";
+import {defaultTicketFiltering, defaultTicketSorting} from "@/lib/graph/defaultTypes";
 
 export const SEARCH_QUERY_KEY = 'search'
 export const STATUS_QUERY_KEY = 'status';
@@ -23,14 +25,23 @@ export function createTicketQueryString(sorting: TicketSorting, filtering: Ticke
   })
 
   if (filtering.searchTerm !== "") params.set(SEARCH_QUERY_KEY, filtering.searchTerm)
-  if (filtering.state.length > 0) params.set(STATUS_QUERY_KEY, states)
+  if (filtering.state.length > 0 && filtering.state != defaultTicketFiltering.state) params.set(STATUS_QUERY_KEY, states)
   if(filtering.labels.length > 0) params.set(LABELS_QUERY_KEY, labels)
   if (filtering.startDate) params.set(START_QUERY_KEY, filtering.startDate.toDateString())
   if (filtering.endDate) params.set(END_QUERY_KEY, filtering.endDate.toDateString())
-  if(sorting.field) params.set(SORT_FIELD_QUERY_KEY, sorting.field)
+  if(sorting.field && sorting.field != defaultTicketSorting.field) params.set(SORT_FIELD_QUERY_KEY, sorting.field)
 
-  if (sorting.orderAscending) params.set(SORT_ORDER_QUERY_KEY, 'asc')
-  else params.set(SORT_ORDER_QUERY_KEY, 'desc')
+  if (!sorting.orderAscending) params.set(SORT_ORDER_QUERY_KEY, 'desc')
 
   return params
+}
+
+export function getTicketSortingFromSearchParams(params: ReadonlyURLSearchParams) {
+  console.log(params.get(SORT_ORDER_QUERY_KEY))
+  const sorting: TicketSorting = {
+    field: params.get(SORT_FIELD_QUERY_KEY) as TicketSortingField,
+    orderAscending: params.get(SORT_ORDER_QUERY_KEY) !== 'desc'
+  }
+
+  return sorting
 }
