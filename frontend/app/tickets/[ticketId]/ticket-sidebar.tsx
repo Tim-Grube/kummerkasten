@@ -55,8 +55,9 @@ export default function TicketSidebar({selectedTicketId}: TicketSidebarProps) {
   }, [tickets, filtering, sorting])
 
   return (
-    <div className="px-4 flex flex-col gap-4">
-      <Breadcrumb>
+    <div className="h-[95vh] max-h-[95vh] flex flex-col overflow-hidden">
+      <div className="px-4 flex flex-col gap-4 h-full min-h-0">
+        <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink href="/tickets" data-cy="ticket-sidebar-breadcrumb">Tickets</BreadcrumbLink>
@@ -70,8 +71,8 @@ export default function TicketSidebar({selectedTicketId}: TicketSidebarProps) {
             </>
           )}
         </BreadcrumbList>
-      </Breadcrumb>
-      <div className="flex flex-col">
+        </Breadcrumb>
+        <div className="flex flex-col">
         <div className={'flex gap-2'}>
           <Input
             placeholder="Suche nach Tickets..."
@@ -120,7 +121,8 @@ export default function TicketSidebar({selectedTicketId}: TicketSidebarProps) {
           )}</div>
       </div>
 
-      <div>
+      <div className="flex-1 overflow-y-auto overflow-x-hidden min-h-0">
+        <div>
         <div className={'w-full flex gap-4 items-center my-2'}>
           <span className={'grow h-0.5 bg-muted-foreground'}/>
           <p className={'text-muted-foreground'}>Dieses Semester</p>
@@ -147,22 +149,20 @@ export default function TicketSidebar({selectedTicketId}: TicketSidebarProps) {
             />
             <div className="flex flex-row justify-between w-full gap-3 overflow-x-auto">
               <div
-                className="truncate max-w-[250px] shrink-0"
+                className={`truncate max-w-[28vh] flex-grow`}
                 title={t.title}
                 data-cy={`ticket-title-${t.id}`}
               >
                 {t.title}
               </div>
               <div
-                className="hidden md:flex text-xs items-center text-muted-foreground truncate"
-                title={`Geändert: ${t?.lastModified ? format(new Date(t.lastModified), "dd.MM.yy") : ""}`}
-              >
+                className="hidden md:flex text-xs items-center text-muted-foreground min-w-[12vh] flex-shrink-0">
                 Geändert: {t?.lastModified ? format(new Date(t.lastModified), "dd.MM.yy") : ""}
               </div>
             </div>
           </div>
         ))}
-
+ 
         <div className={'w-full flex gap-4 items-center my-2'}>
           <span className={'grow h-0.5 bg-muted-foreground'}/>
           <p className={'text-muted-foreground'}>Frühere Semester</p>
@@ -187,16 +187,16 @@ export default function TicketSidebar({selectedTicketId}: TicketSidebarProps) {
               )}
               data-cy={`ticket-status-${t.id}`}
             />
-            <div className="flex flex-row justify-between w-full">
+            <div className="flex flex-row justify-between w-full gap-3 overflow-x-auto">
               <div
-                className="truncate max-w-[250px]"
+                className="truncate max-w-[28vh] flex-grow"
                 title={t.title}
                 data-cy={`ticket-title-${t.id}`}
               >
                 {t.title}
               </div>
               <div
-                className="hidden mx-3 md:flex flex-col text-xs items-end justify-center text-muted-foreground">
+                className="hidden md:flex text-xs items-center text-muted-foreground min-w-[12vh] flex-shrink-0">
                 Geändert: {t?.lastModified ? format(new Date(t.lastModified), "dd.MM.yy") : ""}
               </div>
             </div>
@@ -204,6 +204,8 @@ export default function TicketSidebar({selectedTicketId}: TicketSidebarProps) {
         ))}
 
       </div>
+    </div>
+    </div>
     </div>
   );
 }
