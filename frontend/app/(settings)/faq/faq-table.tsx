@@ -91,10 +91,10 @@ export function QAPTable() {
   );
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="space-y-2 mt-2" data-cy="qap-table">
+      <div className="space-y-2 mt-2" data-cy="faqs-table">
         <div className="flex items-center justify-between flex-wrap gap-2 mb-4">
           <Button
-            data-cy="qap-create-button"
+            data-cy="create-faq-button"
             onClick={() => setDialogState({mode: "create", currentQAP: null})}
             className="flex gap-2"
           >
@@ -103,7 +103,7 @@ export function QAPTable() {
           </Button>
 
           <Input
-            data-cy="qap-searchbar"
+            data-cy="faq-searchbar"
             placeholder="Frage oder Antwort durchsuchen..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
