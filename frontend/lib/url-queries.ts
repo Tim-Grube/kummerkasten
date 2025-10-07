@@ -1,6 +1,7 @@
-import {TicketFiltering, TicketSorting, TicketSortingField} from "@/app/tickets/page";
+import {TicketFiltering, TicketSorting, TicketSortingField} from "@/components/providers/ticket-provider";
 import {ReadonlyURLSearchParams} from "next/navigation";
 import {defaultTicketFiltering, defaultTicketSorting} from "@/lib/graph/defaultTypes";
+import {arraysEqual} from "@/lib/utils";
 
 export const SEARCH_QUERY_KEY = 'search'
 export const STATUS_QUERY_KEY = 'status';
@@ -10,28 +11,41 @@ export const END_QUERY_KEY = 'end'
 export const SORT_FIELD_QUERY_KEY = 'sort';
 export const SORT_ORDER_QUERY_KEY = 'ord';
 
-export function createTicketQueryString(sorting: TicketSorting, filtering: TicketFiltering): URLSearchParams {
+export function createTicketQueryString(
+  sorting: TicketSorting,
+  filtering: TicketFiltering
+): URLSearchParams {
   const params = new URLSearchParams()
-  let states = ""
-  filtering.state.forEach((state, i) => {
-    if (i === 0) states += `${state.toLowerCase()}`
-    else states += `+${state.toLowerCase()}`
-  })
+  const {state, labels, searchTerm, startDate, endDate} = filtering
+  const {field, orderAscending} = sorting
+  const states = state?.map(s => s.toLowerCase()).join('+')
+  const labelNames = labels?.map(l => l.name).join('+')
 
-  let labels = ""
-  filtering.labels.forEach((label, i) => {
-    if (i === 0) labels += `${label.name}`
-    else labels += `+${label.name}`
-  })
+  if (searchTerm?.trim()) params.set(SEARCH_QUERY_KEY, searchTerm.trim())
 
-  if (filtering.searchTerm !== "") params.set(SEARCH_QUERY_KEY, filtering.searchTerm)
-  if (filtering.state.length > 0 && filtering.state != defaultTicketFiltering.state) params.set(STATUS_QUERY_KEY, states)
-  if(filtering.labels.length > 0) params.set(LABELS_QUERY_KEY, labels)
-  if (filtering.startDate) params.set(START_QUERY_KEY, filtering.startDate.toDateString())
-  if (filtering.endDate) params.set(END_QUERY_KEY, filtering.endDate.toDateString())
-  if(sorting.field && sorting.field != defaultTicketSorting.field) params.set(SORT_FIELD_QUERY_KEY, sorting.field)
+  if (state?.length && !arraysEqual(state, defaultTicketFiltering.state)) {
+    params.set(STATUS_QUERY_KEY, states)
+  }
 
-  if (!sorting.orderAscending) params.set(SORT_ORDER_QUERY_KEY, 'desc')
+  if (labels?.length) {
+    params.set(LABELS_QUERY_KEY, labelNames)
+  }
+
+  if (startDate) {
+    params.set(START_QUERY_KEY, startDate.toISOString())
+  }
+
+  if (endDate) {
+    params.set(END_QUERY_KEY, endDate.toISOString())
+  }
+
+  if (field && field !== defaultTicketSorting.field) {
+    params.set(SORT_FIELD_QUERY_KEY, field)
+  }
+
+  if (!orderAscending) {
+    params.set(SORT_ORDER_QUERY_KEY, 'desc')
+  }
 
   return params
 }

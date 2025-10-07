@@ -20,3 +20,7 @@ export function compareInLowercase<T>(
 export function compareStringSets(xs: Set<string>, ys: Set<string>) {
   return xs.size === ys.size && [...xs].every((x) => ys.has(x))
 }
+
+export function arraysEqual<T>(a: T[] = [], b: T[] = []): boolean {
+  return a.length === b.length && a.every(v => b.includes(v))
+}
