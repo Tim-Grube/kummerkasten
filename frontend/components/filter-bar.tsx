@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
@@ -10,8 +10,14 @@ import {DateRangeFilter} from "@/components/date-range-filter";
 import SortingSelection from "@/app/tickets/sorting-selection";
 import {useLabels} from "@/components/providers/label-provider";
 import {useTickets} from "@/components/providers/ticket-provider";
-import {usePathname, useRouter} from "next/navigation";
-import {createTicketQueryString} from "@/lib/url-queries";
+import {usePathname, useRouter, useSearchParams} from "next/navigation";
+import {
+  createTicketQueryString,
+  getTicketFilteringDateRangeFromSearchParams,
+  getTicketFilteringLabelNamesFromSearchParams,
+  getTicketFilteringSearchTermFromSearchParams,
+  getTicketFilterinStatesFromSearchParams, getTicketSortingFromSearchParams
+} from "@/lib/url-queries";
 
 interface FilterBarProps {
   scrollable?: boolean;
@@ -19,18 +25,46 @@ interface FilterBarProps {
 
 export default function FilterBar({scrollable = false}: FilterBarProps) {
   const {labels} = useLabels()
-  const {filtering, stateFilterSet, sorting, setFiltering} = useTickets()
+  const {filtering, stateFilterSet, sorting, setSorting, setFiltering} = useTickets()
   const pathname = usePathname()
+  const params = useSearchParams()
   const router = useRouter()
+  const [hasInitializedFromParams, setHasInitializedFromParams] = useState<boolean>(false)
 
+  // builds query string on change
   useEffect(() => {
+    if (!hasInitializedFromParams) return;
+
     const searchParams = createTicketQueryString(sorting, filtering)
+    if (searchParams.toString() === params.toString()) return;
+
     router.push(pathname + '?' + searchParams)
   }, [filtering.state.length, filtering.labels.length, filtering.startDate, filtering.endDate, sorting.field, sorting.orderAscending]);
 
+  // initializs filtering from params
+  useEffect(() => {
+    if (hasInitializedFromParams || !params || labels.length === 0) return
+
+    setFiltering({
+      searchTerm: getTicketFilteringSearchTermFromSearchParams(params),
+      state: getTicketFilterinStatesFromSearchParams(params),
+      labels: labels.filter(label =>
+        getTicketFilteringLabelNamesFromSearchParams(params).includes(label.name.toLowerCase())
+      ),
+      startDate: getTicketFilteringDateRangeFromSearchParams(params).start,
+      endDate: getTicketFilteringDateRangeFromSearchParams(params).end
+    })
+
+    setSorting(getTicketSortingFromSearchParams(params))
+
+    setHasInitializedFromParams(true)
+  }, [params, hasInitializedFromParams, labels.length]);
+
   return (
-    <div className={cn("flex gap-2", scrollable && "overflow-x-auto max-w-full h-13")}
-         data-cy={'ticket-filter-bar'}>
+    <div
+      className={cn("flex gap-2", scrollable && "overflow-x-auto max-w-full h-13")}
+      data-cy={'ticket-filter-bar'}
+    >
       <Popover>
         <PopoverTrigger asChild>
           <Button
@@ -116,6 +150,5 @@ export default function FilterBar({scrollable = false}: FilterBarProps) {
       />
       <SortingSelection/>
     </div>
-
   )
 }
