@@ -19,6 +19,7 @@ query allUsers {
         lastname
         mail
         role
+        needsNewPassword
     }
 }
 

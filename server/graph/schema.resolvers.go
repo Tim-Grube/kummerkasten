@@ -194,11 +194,12 @@ func (r *mutationResolver) AskForPasswordReset(ctx context.Context, mail string)
 
 	if err := r.DB.NewSelect().Model(user).Where("mail = ?", mail).Scan(ctx); err != nil {
 		log.Printf("failed to find user when asking for password reset: %v", err)
-		return false, ErrInternal
-	}
 
-	if user == nil {
-		return false, fmt.Errorf("user not found")
+		if strings.Contains(err.Error(), "no rows in result set") {
+			return true, nil
+		}
+
+		return false, ErrInternal
 	}
 
 	user.NeedsNewPassword = true

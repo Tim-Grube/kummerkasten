@@ -2,7 +2,7 @@ import {Button} from "@/components/ui/button";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,} from "@/components/ui/dropdown-menu";
 import {UserRole} from "@/lib/graph/generated/graphql"
 import {ColumnDef} from "@tanstack/react-table";
-import {MoreHorizontal, RotateCcw, Shield, Trash, UserCheck, UserMinus,} from "lucide-react";
+import {AlertTriangle, MoreHorizontal, RotateCcw, Shield, Trash, UserCheck, UserMinus,} from "lucide-react";
 import React from "react";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,} from "@/components/ui/tooltip";
 import {useUser} from "@/components/providers/user-provider";
@@ -80,12 +80,22 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
       cell: ({row}) => <span data-cy={'mail-cell'}>{row.original.mail}</span>,
     },
     {
+      id: "needsPasswordReset",
+      header: undefined,
+      cell: ({row}) => (
+        row.original.needsNewPassword && (
+          <button onClick={() => props.setDialogState({mode: "resetInfo", currentUser: row.original})}>
+            <AlertTriangle className={'stroke-destructive'}/>
+          </button>
+        )
+      )
+    },
+    {
       id: "actions",
       enableHiding: false,
       cell: ({row}) => {
         return (
           <>
-            {/*Mail is a unique identifier.*/}
             {!(row.original.mail === user?.mail) && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

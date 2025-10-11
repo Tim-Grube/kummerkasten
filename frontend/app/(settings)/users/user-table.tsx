@@ -40,10 +40,11 @@ export type TableUser = {
   lastname: string;
   mail: string;
   role: UserRole;
+  needsNewPassword: boolean;
 }
 
 export type UserTableDialogState = {
-  mode: "promote" | "demote" | "delete" | "add" | "resetPassword" | null;
+  mode: "promote" | "demote" | "delete" | "add" | "resetPassword" | "resetInfo" | null;
   currentUser: TableUser | null
 }
 
@@ -74,7 +75,7 @@ export function UserTable(props: DataTableProps) {
 
   const client = getClient();
 
-  const resetDiallogState = () => {
+  const resetDialogState = () => {
     setDialogState({mode: null, currentUser: null});
   }
 
@@ -88,7 +89,7 @@ export function UserTable(props: DataTableProps) {
     try {
       await client.request<PromoteMutation>(PromoteDocument, {id: dialogState.currentUser.id})
       toast.success("User wurde erfolgreich zum Admin gemacht")
-      resetDiallogState()
+      resetDialogState()
       props.refreshData()
     } catch (error) {
       toast.error("Ein Fehler beim Ändern der Rolle ist aufgetreten")
@@ -124,7 +125,7 @@ export function UserTable(props: DataTableProps) {
     try {
       await client.request<DeleteUsersMutation>(DeleteUsersDocument, {ids: [dialogState.currentUser.id]})
       toast.success("User wurde erfolgreich gelöscht")
-      resetDiallogState()
+      resetDialogState()
       props.refreshData()
     } catch (error) {
       toast.error("Ein Fehler beim Löschen des Users ist aufgetreten")
@@ -213,13 +214,13 @@ export function UserTable(props: DataTableProps) {
 
       <UserDialog
         open={dialogState.mode === "add"}
-        closeDialog={resetDiallogState}
+        closeDialog={resetDialogState}
         refreshData={props.refreshData}
       />
 
       <ResetPasswordDialog
         user={dialogState.currentUser}
-        closeDialog={resetDiallogState}
+        closeDialog={resetDialogState}
         isOpen={dialogState.mode === "resetPassword"}
       />
 
@@ -228,7 +229,7 @@ export function UserTable(props: DataTableProps) {
         description={`Dies wird ${dialogState.currentUser?.firstname} ${dialogState.currentUser?.lastname} zum Admin machen`}
         onConfirm={handlePromote}
         isOpen={dialogState.mode === "promote"}
-        closeDialog={resetDiallogState}
+        closeDialog={resetDialogState}
       />
 
       <ConfirmationDialog
@@ -236,7 +237,7 @@ export function UserTable(props: DataTableProps) {
         description={`Dies wird ${dialogState.currentUser?.firstname} ${dialogState.currentUser?.lastname} zum normalen User machen`}
         onConfirm={handleDemote}
         isOpen={dialogState.mode === "demote"}
-        closeDialog={resetDiallogState}
+        closeDialog={resetDialogState}
       />
 
       <ConfirmationDialog
@@ -244,7 +245,15 @@ export function UserTable(props: DataTableProps) {
         description={`Dies wird ${dialogState.currentUser?.firstname} ${dialogState.currentUser?.lastname} unwiderruflich löschen`}
         onConfirm={handleDelete}
         isOpen={dialogState.mode === "delete"}
-        closeDialog={resetDiallogState}
+        closeDialog={resetDialogState}
+      />
+
+      <ConfirmationDialog
+        isOpen={dialogState.mode === "resetInfo"}
+        mode={"information"}
+        information={"Diese Person hat ein neues Passwort angefragt"}
+        description={`Bitte stelle zuerst sicher, dass diese Anfrage tatsächlich von ${dialogState.currentUser?.firstname} ${dialogState.currentUser?.lastname} kam`}
+        closeDialog={resetDialogState}
       />
     </div>
   );

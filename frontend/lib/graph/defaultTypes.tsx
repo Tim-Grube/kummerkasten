@@ -7,6 +7,7 @@ export const defaultUser: User = {
   firstname: 'Maxi',
   lastname: 'Musterperson',
   id: "invalid ID",
+  needsNewPassword: false,
   lastLogin: now,
   lastModified: now,
   createdAt: now,
