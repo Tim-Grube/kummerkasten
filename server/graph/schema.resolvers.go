@@ -188,6 +188,29 @@ func (r *mutationResolver) UpdateTicketState(ctx context.Context, ids []string, 
 	return int32(rowsAffected), nil
 }
 
+// AskForPasswordReset is the resolver for the askForPasswordReset field.
+func (r *mutationResolver) AskForPasswordReset(ctx context.Context, mail string) (bool, error) {
+	user := new(models.User)
+
+	if err := r.DB.NewSelect().Model(user).Where("mail = ?", mail).Scan(ctx); err != nil {
+		log.Printf("failed to find user when asking for password reset: %v", err)
+		return false, ErrInternal
+	}
+
+	if user == nil {
+		return false, fmt.Errorf("user not found")
+	}
+
+	user.NeedsNewPassword = true
+
+	if _, err := r.DB.NewUpdate().Model(user).Where("mail = ?", mail).Exec(ctx); err != nil {
+		log.Printf("failed to update user when asking for password reset: %v", err)
+		return false, ErrInternal
+	}
+
+	return true, nil
+}
+
 // CreateLabel is the resolver for the createLabel field.
 func (r *mutationResolver) CreateLabel(ctx context.Context, label model.NewLabel) (*model.Label, error) {
 	const MAXLABELLENGTH = 50
@@ -926,7 +949,7 @@ func (r *mutationResolver) UpdateQuestionAnswerPair(ctx context.Context, id stri
 	return qAP.ID, nil
 }
 
-// UpdateQuestionAnswerPairBatchPositons is the resolver for the updateQuestionAnswerPairBatchPositons field.
+// UpdateQuestionAnswerPairBatchPositions is the resolver for the updateQuestionAnswerPairBatchPositons field.
 func (r *mutationResolver) UpdateQuestionAnswerPairBatchPositions(ctx context.Context, questionAnswerPairs []*model.UpdateQuestionAnswerPairPosition) (bool, error) {
 	amountQAPsInDB, err := r.DB.NewSelect().Model((*model.QuestionAnswerPair)(nil)).Count(ctx)
 	if err != nil {

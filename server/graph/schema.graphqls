@@ -44,6 +44,7 @@ type User {
     firstname: String!
     lastname: String!
     role: UserRole!
+    needsNewPassword: Boolean!
     createdAt: Time!
     lastModified: Time!
     lastLogin: Time
@@ -151,6 +152,7 @@ type Mutation {
     deleteTicket(ids: [String!]!): Int! @hasRole(role: ADMIN)
     updateTicket(id: String!, ticket: UpdateTicket!): String! @hasRole(role: USER)
     updateTicketState(ids: [String!]!, state: TicketState!): Int! @hasRole(role: USER)
+    askForPasswordReset(mail: String!): Boolean!
 
     createLabel(label: NewLabel!): Label! @hasRole(role: USER)
     deleteLabel(ids: [String!]!): Int! @hasRole(role: ADMIN)
