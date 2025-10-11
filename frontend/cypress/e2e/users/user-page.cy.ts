@@ -46,6 +46,33 @@ describe('User Management Page Tests', () => {
     it('does not allow editing on self', () => {
       page.getActionsOfUsers(users.cypress.mail).should('not.exist')
     });
+
+    it('shows alert icon on users with pending password reset', () => {
+      cy.requestPasswordReset(users.fsles1.mail)
+      cy.reload()
+
+      page.getUserRows().contains(users.fsles1.mail).closest('tr').within(() => {
+        page.getResetPasswordAlertButtons().should('be.visible')
+      })
+    })
+
+    it('removes alert icon after reseting a password', () => {
+      cy.requestPasswordReset(users.fsles1.mail)
+      cy.reload();
+
+      page.getUserRows().contains(users.fsles1.mail).closest('tr').within(() => {
+        page.getResetPasswordAlertButtons().should('be.visible')
+      })
+
+      cy.getUserIdByMail(users.fsles1.mail).then((id) => {
+        cy.updateUserPassword(id, users.fsles1.password)
+        cy.reload();
+
+        page.getUserRows().contains(users.fsles1.mail).within(() => {
+          page.getResetPasswordAlertButtons().should('not.exist')
+        })
+      })
+    });
   })
 
   context('User Table - Sorting', () => {

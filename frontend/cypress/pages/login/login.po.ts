@@ -14,6 +14,10 @@ export function getMailMessage() {
   return cy.get('[data-cy="mail-message"]')
 }
 
+export function getPasswordResetButton() {
+  return cy.get('[data-cy="password-reset-button"]')
+}
+
 export function getSubmitButton() {
   return cy.get('[data-cy="submit"]')
 }

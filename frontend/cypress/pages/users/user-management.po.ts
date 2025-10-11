@@ -46,6 +46,10 @@ export function getMailCells() {
   return cy.get("[data-cy=mail-cell]")
 }
 
+export function getResetPasswordAlertButtons() {
+  return cy.get("[data-cy=password-reset-info-button]")
+}
+
 export function getActionsOfUsers(mail: string) {
   return cy.get('[data-cy="user-row"]').filter((_, row) => {
     return Cypress.$(row).find('td').filter((_, td) => {

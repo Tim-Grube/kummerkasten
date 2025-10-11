@@ -1,6 +1,6 @@
 import users from "../fixtures/users.json"
 import * as accountPage from "../pages/accountsettings.po"
-import * as loginPage from "../pages/login.po"
+import * as loginPage from "../pages/login/login.po"
 import * as sidebar from "../pages/sidebar.po"
 import {UserRole} from "../../lib/graph/generated/graphql";
 

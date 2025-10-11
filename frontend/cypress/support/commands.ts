@@ -98,6 +98,29 @@ Cypress.Commands.add("updateUserProfile", (id: string, user: UpdateUser) => {
   });
 });
 
+Cypress.Commands.add("requestPasswordReset", (mail: string) => {
+  const mutation = `
+        mutation askForPasswordReset($mail: String!) {
+            askForPasswordReset(mail: $mail)
+        }
+    `;
+
+  return cy.request({
+    method: "POST",
+    url: "http://localhost:8080/api",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: {
+      query: mutation,
+      variables: {
+        mail: mail,
+      },
+      operationName: "askForPasswordReset",
+    },
+  });
+});
+
 Cypress.Commands.add(
   "updateUserPassword",
   (id: string, newPassword: string) => {
@@ -106,7 +129,6 @@ Cypress.Commands.add(
         updateUser(id: $id, user: $user)
       }
     `;
-
     return cy.request({
       method: "POST",
       url: "http://localhost:8080/api",
@@ -552,10 +574,9 @@ declare global {
 
       updateUserProfile(id: string, user: UpdateUser): Chainable<Response<any>>;
 
-      updateUserPassword(
-        currentPassword: string,
-        newPassword: string
-      ): Chainable<Response<any>>;
+      requestPasswordReset(mail: string): Chainable<Response<any>>
+
+      updateUserPassword(id: string, newPassword: string): Chainable<Response<any>>;
 
       deleteUser(mail: string): Chainable<any>;
 

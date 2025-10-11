@@ -15,7 +15,7 @@ export default function ResetPasswordDialog(props: ResetPasswordDialogProps) {
 
   return (
     <Dialog open={props.open} onOpenChange={props.onOpenChange}>
-      <DialogContent>
+      <DialogContent data-cy={'reset-password-dialog'}>
         <DialogHeader>
           <DialogTitle>Password zurücksetzen</DialogTitle>
           <DialogDescription>Solltest du das Passwort zu deinem Account verloren hast, kannst du hier die Admins nach
@@ -23,13 +23,15 @@ export default function ResetPasswordDialog(props: ResetPasswordDialogProps) {
         </DialogHeader>
         <div className={'w-full flex flex-wrap gap-4'}>
           <Input
+            data-cy={'mail-input'}
             className={'w-full'}
             value={mail}
-            onChange={(e) => setMail(e.target.value)}
+            onChange={(e) => setMail(e.target.value.trim())}
             type={'text'}
             placeholder={'max.musterperson@kummer.kasten'}
           />
           <Button
+            data-cy={'submit-button'}
             onClick={() => {
               setMail("")
               props.onConfirm(mail)

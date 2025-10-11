@@ -84,8 +84,14 @@ export function UserColumns(props: UserColumnProps): ColumnDef<TableUser>[] {
       header: undefined,
       cell: ({row}) => (
         row.original.needsNewPassword && (
-          <button onClick={() => props.setDialogState({mode: "resetInfo", currentUser: row.original})}>
-            <AlertTriangle className={'stroke-destructive'}/>
+          <button
+            className={'cursor-pointer'}
+            onClick={() => props.setDialogState({mode: "resetInfo", currentUser: row.original})}
+          >
+            <AlertTriangle
+              data-cy={'password-reset-info-button'}
+              className={'stroke-destructive'}
+            />
           </button>
         )
       )
