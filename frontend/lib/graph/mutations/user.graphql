@@ -31,3 +31,7 @@ mutation updateUser($id: String!, $user: UpdateUser!){
 mutation resetPassword($id: String!, $password: String!) {
     resetPassword(id: $id, password: $password)
 }
+
+mutation askForNewPassword($mail: String!) {
+    askForPasswordReset(mail: $mail)
+}
