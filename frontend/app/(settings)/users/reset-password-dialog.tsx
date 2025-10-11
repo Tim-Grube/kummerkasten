@@ -22,6 +22,7 @@ import {cn} from "@/lib/utils";
 interface ResetPasswordDialogProps {
   user: TableUser | null
   closeDialog: () => void;
+  triggerDataRefresh: () => void;
   isOpen: boolean;
 }
 
@@ -47,6 +48,7 @@ export function ResetPasswordDialog(props: ResetPasswordDialogProps) {
       setHasTriedToSubmit(false);
       setPassword("")
       setIsPasswordValid(false)
+      props.triggerDataRefresh()
       props.closeDialog();
       toast.success("Password wurde erfolgreich zurückgesetzt")
     } catch (error) {

@@ -18,8 +18,11 @@ export default function ResetPasswordDialog(props: ResetPasswordDialogProps) {
       <DialogContent data-cy={'reset-password-dialog'}>
         <DialogHeader>
           <DialogTitle>Password zurücksetzen</DialogTitle>
-          <DialogDescription>Solltest du das Passwort zu deinem Account verloren hast, kannst du hier die Admins nach
-            einem neuen Fragen</DialogDescription>
+          <DialogDescription>
+            Solltest du das Passwort zu deinem Account verloren haben,
+            kannst du hiermit die Admins darauf aufmerksam machen. Sie bekommen dann eine Benachrichtigung,
+            dass der Account mit dieser Mail einen Reset benötigt.
+          </DialogDescription>
         </DialogHeader>
         <div className={'w-full flex flex-wrap gap-4'}>
           <Input

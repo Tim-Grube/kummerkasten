@@ -537,6 +537,7 @@ func (r *mutationResolver) ResetPassword(ctx context.Context, id string, passwor
 	}
 
 	user.Password = newPassword
+	user.NeedsNewPassword = false
 
 	if _, err := r.DB.NewUpdate().Model(user).WherePK().Exec(ctx); err != nil {
 		log.Printf("Failed to update user for password reset: %v", err)

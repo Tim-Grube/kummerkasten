@@ -222,6 +222,7 @@ export function UserTable(props: DataTableProps) {
         user={dialogState.currentUser}
         closeDialog={resetDialogState}
         isOpen={dialogState.mode === "resetPassword"}
+        triggerDataRefresh={props.refreshData}
       />
 
       <ConfirmationDialog
