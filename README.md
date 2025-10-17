@@ -8,9 +8,6 @@
 
 </div>
 
->[!NOTE]
-> This repo will soon be transfered to another organization
-
 ## Getting Started
 >[!CAUTION]
 > The software is currently only available in german but we are working on implementing general i8n
