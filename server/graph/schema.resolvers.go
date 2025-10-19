@@ -1268,6 +1268,7 @@ func (r *queryResolver) Login(ctx context.Context, mail string, password string)
 		Name:     "sid",
 		Value:    newSid,
 		Path:     "/",
+		Domain:   os.Getenv("PUBLIC_DOMAIN"),
 		HttpOnly: true,
 		Secure:   os.Getenv("ENV") != "DEV",
 		SameSite: http.SameSiteLaxMode,
