@@ -63,7 +63,7 @@ export function Footer() {
         <a
           data-cy={'footer-github'}
           className="cursor-pointer underline"
-          href="https://github.com/plebysnacc/kummerkasten"
+          href="https://github.com/FachschaftMathPhysInfo/kummerkasten"
         >
           Source Code
         </a>
