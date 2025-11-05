@@ -12,10 +12,8 @@ export async function middleware(request: NextRequest) {
     const sid = request.cookies.get('sid')?.value;
     if(!sid) return false;
 
-
     try {
-      const apiUrl = new URL("/api", request.nextUrl.origin)
-      apiUrl.port = '8080'
+      const apiUrl = 'http://localhost:8080/api'
       const client = new GraphQLClient(apiUrl.toString())
       const loggedInData = await client.request<LoginCheckQuery>(LoginCheckDocument, { sid })
       return loggedInData.loginCheck !== null
@@ -55,3 +53,4 @@ export const config = {
     '/app-settings'
   ],
 }
+

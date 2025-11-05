@@ -1268,6 +1268,7 @@ func (r *queryResolver) Login(ctx context.Context, mail string, password string)
 		Name:     "sid",
 		Value:    newSid,
 		Path:     "/",
+		Domain:   os.Getenv("PUBLIC_DOMAIN"),
 		HttpOnly: true,
 		Secure:   os.Getenv("ENV") != "DEV",
 		SameSite: http.SameSiteLaxMode,
@@ -1299,17 +1300,25 @@ func (r *queryResolver) Login(ctx context.Context, mail string, password string)
 
 // LoginCheck is the resolver for the loginCheck field.
 func (r *queryResolver) LoginCheck(ctx context.Context, sid *string) (*model.User, error) {
+	if sid == nil {
+		log.Printf("No sid provided in login check")
+		return nil, nil
+	}
+
 	if _, err := uuid.Parse(*sid); err != nil {
+		log.Printf("Failed to parse sid to uuid in login check: %v", err)
 		return nil, nil
 	}
 
 	var sessions []*model.Session
 
 	if err := r.DB.NewSelect().Model(&sessions).Where("id = ?", sid).Scan(ctx); err != nil {
+		log.Printf("error while selection sessions from db in login check: %v", err)
 		return nil, ErrInternal
 	}
 
 	if sessions == nil {
+		log.Printf("Found no session for user with id: %v", *sid)
 		return nil, nil
 	}
 
@@ -1318,6 +1327,7 @@ func (r *queryResolver) LoginCheck(ctx context.Context, sid *string) (*model.Use
 	if err := r.DB.NewSelect().Model(&users).
 		Where("id = ?", sessions[0].UserID).
 		Scan(ctx); err != nil {
+		log.Printf("error while selection user from db after having found the session: %v", err)
 		return nil, ErrInternal
 	}
 
