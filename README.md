@@ -8,6 +8,9 @@
 
 </div>
 
+>[!CAUTION]
+>Due to a lack of resources (servers for testing and humans for coding) this project is kind of paused. I will try to get back during late August, where the roadmap will include building a more robust testing foundation and focusing more on usability rather than aesthetics.
+
 ## Quick Start
 A quickstart guide can be found in our [wiki](https://github.com/FachschaftMathPhysInfo/kummerkasten/wiki). You can also find a more detailed explanation of the configuration options there. We will shortly add guides for users and admins on how the software itself works - although we feel it its fairly intuitive.
 
